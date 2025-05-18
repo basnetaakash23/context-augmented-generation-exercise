@@ -8,11 +8,11 @@ class ContextService:
         self.key = f"context:{user_id}"  # e.g., context:aakash123
         self.max_length = 10
 
-    def add_message(self, role, message):
+    def add_message(self, role, message, category="general"):
         """
         Store a message with role ('user' or 'assistant') and message text.
         """
-        entry = f"{role}|{message}"
+        entry = f"{role}|{category}|{message}"
         redis_client.rpush(self.key, entry)
         redis_client.ltrim(self.key, -self.max_length, -1)
 
@@ -21,7 +21,12 @@ class ContextService:
         Retrieve the context as a list of (role, message) tuples.
         """
         raw = redis_client.lrange(self.key, 0, -1)
-        return [tuple(item.split("|", 1)) for item in raw]
+        filtered = []
+        for entry in raw:
+            parts = entry.split("|", 2)
+            if len(parts) == 3 and parts[1] == "category":
+                filtered.append((parts[0], parts[2]))
+        return filtered
 
     def clear_context(self):
         """

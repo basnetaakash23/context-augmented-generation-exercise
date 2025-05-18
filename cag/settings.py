@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -125,4 +127,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 REDIS_DB = 0
+
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
